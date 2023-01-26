@@ -1,10 +1,13 @@
 # Vue Slick Press
 
-A simple Vue 3 directive that intercepts typical clicks and "long presses". Intended to work across touch browsers and mouse browsers.
+A simple Vue 3 directive that distinguishes typical clicks from "long presses". Intended to work across touch browsers and mouse browsers.
 
 ## Usage
 
-First, import the directive like so and configure your events:
+First, install the directive using
+```npm install @edenchazard/vue-slick-press```
+
+Then, import it like so and configure your events:
 
 ```ts
 import vSlickPress from 'vue-slick-press';
