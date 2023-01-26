@@ -1,47 +1,49 @@
-<script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
     <div class="wrapper">
-      <HelloWorld msg="You did it!" />
     </div>
   </header>
 
   <main>
-    <TheWelcome />
+    <section>
+      <h2>Options</h2>
+      <form>
+        <div>
+          <input
+            type="number"
+            id="waitTime"
+            v-model="waitTime" />
+          <label for="waitTime">
+            Wait time before a press is interpreted as a "long press".
+          </label>
+        </div>
+        <div>
+          <input
+            type="checkbox"
+            id="disableRightClick"
+            v-model="disableRightClick" />
+          <label for="waitTime">
+            Disable the right click menu. If enabled, some css will be applied to the element disabling the right click menu.
+          </label>
+        </div>
+      </form>
+    </section>
+    <section>
+      <h2>Preview</h2>
+      <GridItem
+        :longPressWait="waitTime"
+        :rightClick="disableRightClick" />
+    </section>
   </main>
 </template>
 
+<script setup lang="ts">
+import { ref } from 'vue';
+import GridItem from './components/DemoTest.vue';
+
+const waitTime = ref<number>(300);
+const disableRightClick = ref<boolean>(false);
+</script>
+
 <style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
 </style>
