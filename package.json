@@ -1,8 +1,10 @@
 {
   "name": "@edenchazard/vue-slick-press",
   "version": "1.0.0",
-  "private": true,
+  "type": "module",
+  "private": false,
   "homepage": "https://github.com/edenchazard/vue-slick-press#readme",
+  "files": ["dist"],
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check build-only",
@@ -11,6 +13,15 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
+  },
+  "main": "./dist/vue-slick-press.umd.cjs",
+  "module": "./dist/vue-slick-press.js",
+  "exports": {
+    ".": {
+      "import": "./dist/vue-slick-press.js",
+      "require": "./dist/vue-slick-press.umd.cjs"
+    },
+    "./style.css": "./dist/style.css"
   },
   "dependencies": {
     "vue": "^3.2.45"

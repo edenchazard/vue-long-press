@@ -5,7 +5,7 @@ type Interactions = 'click' | 'contextmenu'
 | 'touchstart' | 'touchend' | 'touchcancel' | 'touchmove'
 | 'mousedown' | 'mouseleave';
 
-const noSelectClass = 'long-press-no-select';
+const noSelectClass = 'slick-press-no-context';
 const defaults = {
   waitTime: 300,
   disableRightClickMenu: false
