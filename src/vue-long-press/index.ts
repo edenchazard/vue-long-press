@@ -1,102 +1,128 @@
-import "./style.css";
+import type { DirectiveBinding } from 'vue';
+import './style.css';
+
+type Interactions = 'click' | 'contextmenu'
+| 'touchstart' | 'touchend' | 'touchcancel' | 'touchmove'
+| 'mousedown' | 'mouseleave';
 
 const noSelectClass = 'long-press-no-select';
+const defaults = {
+  waitTime: 300,
+  disableRightClickMenu: false
+};
 
-let timeout = null;
+let timeout: null | ReturnType<typeof setTimeout> = null;
 
-const clear = () => {
-    clearTimeout(timeout);
-    timeout = null;
-}
+const clear = (): void => {
+  // Clear the timeout if it's active
+  if (timeout) clearTimeout(timeout);
+  timeout = null;
+};
 
-const prevent = (event) => event.preventDefault(); 
+const prevent = (event: Event): void => { event.preventDefault(); };
 
+// TODO: I'm sure there's some sort of Vue-TS thing that
+// can give accurate typings for all this, but for now...
 export default {
-    beforeMount(el, binding) {
-        const {
-            longPress, click, press, // callbacks
-            wait, disableRightClickMenu // options
-        } = binding.value;
+  beforeMount (el: HTMLElement, binding: DirectiveBinding<{
+    longPress: () => void
+    click: () => void
+    press: () => void
+    wait: number
+    disableRightClickMenu: boolean
+  }>) {
+    const {
+      longPress, click, press, // callbacks
+      wait, disableRightClickMenu // options
+    } = binding.value;
 
-        const onPress = (event) => {
-            event.stopPropagation();
+    const onPress = (event: MouseEvent | TouchEvent): void => {
+      event.stopPropagation();
 
-            // only left click or touch
-            if(event.which > 1) return;
-            
-            timeout = setTimeout(() => {
-                timeout = null;
+      // only left click or touch
+      if (event.which > 1) return;
 
-                longPress && longPress();
-            }, wait || 300); // default 300ms
+      timeout = setTimeout(() => {
+        timeout = null;
 
-            press && press();
-        };
-
-        const onClick = () => {
-            if(timeout){
-                click && click();
-            }
-
-            clear();
-        };
-
-        const outOfBoundsClear = (event) => {
-            // no need to continue if timeout is already expired
-            if(!timeout) return;
-
-            const
-                touch = event.targetTouches[0],
-                elementAtPoint = document.elementFromPoint(touch.pageX, touch.pageY);
-
-            // check if the element under the pointer is the binded element
-            // or a descendent
-            if (!el.isSameNode(elementAtPoint) && !el.contains(elementAtPoint)) {
-                clear();
-            }
-        };
-
-        let events = [];
-
-        // touch browser
-        if('ontouchstart' in document.documentElement){
-            events = [
-                ...events,
-                ['touchstart', onPress],
-                ['touchend', clear],
-                ['touchcancel', clear],
-                // if the input leaves the area, cancel long press
-                ['touchmove', outOfBoundsClear]
-            ];
+        if (longPress) {
+          longPress();
         }
+      }, wait || defaults.waitTime);
 
-        // mousey browser
-        if('onmousedown' in document.documentElement){
-            events = [
-                ...events,
-                ['mousedown', onPress],
-                ['mouseleave', clear]
-            ];
-        }
+      if (press) {
+        press();
+      }
+    };
 
-        events.push(['click', onClick]);
+    const onClick = (event: Event): void => {
+      if (timeout && click) {
+        click();
+      }
 
-        disableRightClickMenu && events.push(['contextmenu', prevent]);
+      clear();
+    };
 
-        events.forEach(event => el.addEventListener(event[0], event[1]))
-        // for removing them later
-        //el.events = events;
-        el.classList.add(noSelectClass);
-    },
+    const outOfBoundsClear = (event: TouchEvent): void => {
+      // no need to continue if timeout is already expired
+      if (!timeout) return;
 
-    updated(el){
-        el.classList.add(noSelectClass);
-    },
+      const touch = event.targetTouches[0];
+      const elementAtPoint = document.elementFromPoint(touch.pageX, touch.pageY);
 
+      // check if the element under the pointer is the binded element
+      // or a descendent
+      if (!el.isSameNode(elementAtPoint) && !el.contains(elementAtPoint)) {
+        clear();
+      }
+    };
+
+    let events: Array<[Interactions, (event: any) => void]> = [
+      ['click', onClick]
+    ];
+
+    // is using touch events
+    if ('ontouchstart' in document.documentElement) {
+      events = [
+        ...events,
+        ['touchstart', onPress],
+        ['touchend', clear],
+        ['touchcancel', clear],
+        // if the input leaves the area, cancel long press
+        ['touchmove', outOfBoundsClear]
+      ];
+    }
+
+    // using mouse events
+    if ('onmousedown' in document.documentElement) {
+      events = [
+        ...events,
+        ['mousedown', onPress],
+        ['mouseleave', clear]
+      ];
+    }
+
+    if (disableRightClickMenu) {
+      events.push(['contextmenu', prevent]);
+    }
+
+    events.forEach(event => {
+      el.addEventListener(event[0], event[1]);
+    });
+
+    // for removing them later
+    // el.events = events;
+    el.classList.add(noSelectClass);
+  },
+
+  updated (el: HTMLElement) {
+    el.classList.add(noSelectClass);
+  }
+
+  /* unbind(el){
     // cleanup
-    /*unbind(el){
-        el.classList.remove(noSelectClass);
-        el.events.forEach(event => el.removeEventListener(event[0], event[1]));
-        el.events = null;
-    }*/
+    el.classList.remove(noSelectClass);
+    el.events.forEach(event => el.removeEventListener(event[0], event[1]));
+    el.events = null;
+  } */
 };
