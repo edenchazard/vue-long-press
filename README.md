@@ -1,6 +1,52 @@
-# .
+# Vue Long Press
 
-This template should help get you started developing with Vue 3 in Vite.
+A simple Vue 3 directive that intercepts typical clicks and "long presses". Intended to work across touch browsers and mouse browsers.
+
+## Usage
+
+First, import the directive like so and configure your events:
+
+```ts
+import vLongPress from '../vue-long-press';
+
+function singleClick () {
+  alert('click detected!');
+}
+
+function longPress () {
+  alert('long press detected!');
+}
+```
+
+And then use it on a component.
+
+```vue
+<div
+  v-longPress="{
+    click: singleClick,
+    longPress: longPress,
+    wait: 500,
+    disableRightClickMenu: true
+  }"
+> click/press here
+</div>
+```
+
+## API
+
+There are a few configurable options per directive, these are:
+
+| Option                       | Type        | Description                                                                                                 |
+|------------------------------|-------------| ------------------------------------------------------------------------------------------------------------|
+| click                        | () => void  | Function to call when clicked.                                                                              |
+| longPress                    | () => void  | Function to call when a press extends into a long press.                                                    |
+| press                        | () => void  | Function to call whenever the component is 'pressed'. Equivalent of touchdown/mousedown.                    |
+| wait                         | number      | The period of time in miliseconds from first press to when to call a long press.                            |
+| disableRightClickMenu        | boolean     | If enabled, custom css will be applied to prevent the context menu appearing when held down/right click.    |
+
+## TODOs
+
+- Fix the demo so it actually works haha. Right now it's working in the project it spawned from.
 
 ## Recommended IDE Setup
 
@@ -37,12 +83,6 @@ npm run dev
 
 ```sh
 npm run build
-```
-
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-npm run test:unit
 ```
 
 ### Lint with [ESLint](https://eslint.org/)
