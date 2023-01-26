@@ -1,7 +1,7 @@
 <template>
 <div
   class="area"
-  v-longPress="{
+  v-slickPress="{
     click: singleClick,
     longPress: longPress,
     wait: longPressWait,
@@ -12,7 +12,7 @@
 </div>
 </template>
 <script setup lang="ts">
-import vLongPress from '../vue-long-press';
+import vSlickPress from '../vue-slick-press';
 
 defineProps({
   longPressWait: {

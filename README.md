@@ -1,4 +1,4 @@
-# Vue Long Press
+# Vue Slick Press
 
 A simple Vue 3 directive that intercepts typical clicks and "long presses". Intended to work across touch browsers and mouse browsers.
 
@@ -7,7 +7,7 @@ A simple Vue 3 directive that intercepts typical clicks and "long presses". Inte
 First, import the directive like so and configure your events:
 
 ```ts
-import vLongPress from '../vue-long-press';
+import vSlickPress from 'vue-slick-press';
 
 function singleClick () {
   alert('click detected!');
@@ -22,7 +22,7 @@ And then use it on a component.
 
 ```vue
 <div
-  v-longPress="{
+  v-slickPress="{
     click: singleClick,
     longPress: longPress,
     wait: 500,

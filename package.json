@@ -1,8 +1,8 @@
 {
-  "name": "vue-long-press",
-  "version": "0.0.0",
+  "name": "@edenchazard/vue-slick-press",
+  "version": "1.0.0",
   "private": true,
-  "homepage": "https://github.com/edenchazard/vue-long-press#readme",
+  "homepage": "https://github.com/edenchazard/vue-slick-press#readme",
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check build-only",
@@ -17,10 +17,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/edenchazard/vue-long-press.git"
+    "url": "git+https://github.com/edenchazard/vue-slick-press.git"
   },
   "bugs": {
-    "url": "https://github.com/edenchazard/vue-long-press/issues"
+    "url": "https://github.com/edenchazard/vue-slick-press/issues"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.4",
