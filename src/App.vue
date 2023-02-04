@@ -1,7 +1,6 @@
 <template>
   <header>
-    <div class="wrapper">
-    </div>
+    <div class="wrapper"></div>
   </header>
 
   <main>
@@ -12,7 +11,8 @@
           <input
             type="number"
             id="waitTime"
-            v-model="waitTime" />
+            v-model="waitTime"
+          />
           <label for="waitTime">
             Wait time before a press is interpreted as a "long press".
           </label>
@@ -21,9 +21,11 @@
           <input
             type="checkbox"
             id="disableRightClick"
-            v-model="disableRightClick" />
+            v-model="disableRightClick"
+          />
           <label for="waitTime">
-            Disable the right click menu. If enabled, some css will be applied to the element disabling the right click menu.
+            Disable the right click menu. If enabled, some css will be applied
+            to the element disabling the right click menu.
           </label>
         </div>
       </form>
@@ -32,7 +34,8 @@
       <h2>Preview</h2>
       <GridItem
         :longPressWait="waitTime"
-        :rightClick="disableRightClick" />
+        :rightClick="disableRightClick"
+      />
     </section>
   </main>
 </template>
@@ -45,5 +48,4 @@ const waitTime = ref<number>(300);
 const disableRightClick = ref<boolean>(false);
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

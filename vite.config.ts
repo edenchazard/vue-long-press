@@ -9,8 +9,8 @@ export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    }
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
   },
   build: {
     lib: {
@@ -26,7 +26,7 @@ export default defineConfig({
       // name.js (es module)
       // name.umd.cjs) (common js module)
       // default fileName is the name option of package.json
-      fileName: 'vue-slick-press'
+      fileName: 'vue-slick-press',
     },
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled
@@ -36,9 +36,9 @@ export default defineConfig({
         // Provide global variables to use in the UMD build
         // for externalized deps
         globals: {
-          vue: 'Vue'
-        }
-      }
-    }
-  }
+          vue: 'Vue',
+        },
+      },
+    },
+  },
 });

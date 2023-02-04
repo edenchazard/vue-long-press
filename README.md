@@ -5,18 +5,18 @@ A simple Vue 3 directive that distinguishes typical clicks from "long presses". 
 ## Usage
 
 First, install the directive using
-```npm install @edenchazard/vue-slick-press```
+`npm install @edenchazard/vue-slick-press`
 
 Then, import it like so and configure your events:
 
 ```ts
 import vSlickPress from 'vue-slick-press';
 
-function singleClick () {
+function singleClick() {
   alert('click detected!');
 }
 
-function longPress () {
+function longPress() {
   alert('long press detected!');
 }
 ```
@@ -29,7 +29,7 @@ And then use it on a component.
     click: singleClick,
     longPress: longPress,
     wait: 500,
-    disableRightClickMenu: true
+    disableRightClickMenu: true,
   }"
 > click/press here
 </div>
@@ -39,13 +39,13 @@ And then use it on a component.
 
 There are a few configurable options per directive, these are:
 
-| Option                       | Type        | Description                                                                                                 |
-|------------------------------|-------------| ------------------------------------------------------------------------------------------------------------|
-| click                        | () => void  | Function to call when clicked.                                                                              |
-| longPress                    | () => void  | Function to call when a press extends into a long press.                                                    |
-| press                        | () => void  | Function to call whenever the component is 'pressed'. Equivalent of touchdown/mousedown.                    |
-| wait                         | number      | The period of time in miliseconds from first press to when to call a long press.                            |
-| disableRightClickMenu        | boolean     | If enabled, custom css will be applied to prevent the context menu appearing when held down/right click.    |
+| Option                | Type       | Description                                                                                              |
+| --------------------- | ---------- | -------------------------------------------------------------------------------------------------------- |
+| click                 | () => void | Function to call when clicked.                                                                           |
+| longPress             | () => void | Function to call when a press extends into a long press.                                                 |
+| press                 | () => void | Function to call whenever the component is 'pressed'. Equivalent of touchdown/mousedown.                 |
+| wait                  | number     | The period of time in miliseconds from first press to when to call a long press.                         |
+| disableRightClickMenu | boolean    | If enabled, custom css will be applied to prevent the context menu appearing when held down/right click. |
 
 ## TODOs
 
@@ -62,8 +62,8 @@ TypeScript cannot handle type information for `.vue` imports by default, so we r
 If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
 
 1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
+   1. Run `Extensions: Show Built-in Extensions` from VSCode's command palette
+   2. Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
 2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
 
 ## Customize configuration
