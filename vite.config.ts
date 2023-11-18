@@ -1,44 +1,62 @@
 import { fileURLToPath, URL } from 'node:url';
 
-import { defineConfig } from 'vite';
+import { defineConfig, UserConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { resolve } from 'path';
+import dts from 'vite-plugin-dts';
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [vue()],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-    },
-  },
-  build: {
-    lib: {
-      // the entry file that is loaded whenever someone imports
-      // your plugin in their app
-      entry: resolve(__dirname, 'src/vue-slick-press/index.ts'),
-
-      // the exposed global variable
-      // is required when formats includes 'umd' or 'iife'
-      name: 'VueSlickPress',
-
-      // the proper extensions will be added, ie:
-      // name.js (es module)
-      // name.umd.cjs) (common js module)
-      // default fileName is the name option of package.json
-      fileName: 'vue-slick-press',
-    },
-    rollupOptions: {
-      // make sure to externalize deps that shouldn't be bundled
-      // into your library
-      external: ['vue'],
-      output: {
-        // Provide global variables to use in the UMD build
-        // for externalized deps
-        globals: {
-          vue: 'Vue',
-        },
+export default defineConfig(({ mode }) => {
+  const baseConfig: UserConfig = {
+    plugins: [
+      vue(),
+      dts(
+        mode === 'package'
+          ? {
+              entryRoot: './src',
+              tsconfigPath: './tsconfig.app.json',
+            }
+          : {},
+      ),
+    ],
+    base: '/vue-slick-press/',
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
       },
     },
-  },
+  };
+
+  if (mode === 'package') {
+    return {
+      ...baseConfig,
+      build: {
+        outDir: './dist',
+        emptyOutDir: true,
+        lib: {
+          entry: resolve(__dirname, 'src/index.ts'),
+          name: 'VueSlickPress',
+          formats: ['es', 'cjs'],
+        },
+      },
+      rollupOptions: {
+        external: ['vue'],
+        output: {
+          // Provide global variables to use in the UMD build
+          // for externalized deps
+          globals: {
+            vue: 'Vue',
+          },
+        },
+      },
+    };
+  } else {
+    return {
+      ...baseConfig,
+      build: {
+        outDir: './docs',
+        emptyOutDir: true,
+      },
+    };
+  }
 });
