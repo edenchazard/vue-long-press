@@ -1,4 +1,4 @@
-.long-press-no-select {
+.vue-slick-press-no-select {
   -webkit-touch-callout: none; /* iOS Safari */
   user-select: none;
 }

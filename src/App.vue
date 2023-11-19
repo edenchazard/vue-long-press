@@ -22,69 +22,120 @@
         </a>
       </div>
       <p>
-        A simple Vue directive to enable components to detect clicks and long
-        presses.
+        Two simple Vue composables to enable components to detect clicks and
+        long presses.
       </p>
     </header>
 
     <main>
       <section>
-        <code>npm install @edenchazard/vue-slick-press</code>
+        <code class="code-block">npm install @edenchazard/vue-slick-press</code>
       </section>
 
       <section id="demo">
-        <div id="settings">
-          <h2>Demo</h2>
-          <select v-model.number="waitTime" id="waitTime">
-            <option value="300">300ms</option>
-            <option value="600">600ms</option>
-            <option value="1000">1s</option>
-            <option value="2000">2s</option>
-          </select>
-          <label for="waitTime">
-            Wait time before a press is interpreted as a "long press".
-          </label>
-          <div>
-            <input
-              type="checkbox"
-              id="disableRightClick"
-              v-model="disableRightClick"
-            />
-            <label for="disableRightClick">
-              Disable the right click menu. If enabled, some css will be applied
-              to the element disabling the right click menu.
-            </label>
-          </div>
-        </div>
+        <h2>Demo</h2>
 
-        <div id="grid">
-          <button
-            v-for="item in items"
-            :aria-pressed="item.selected"
-            class="item"
-            :class="{ clicked: item.clicked, selected: item.selected }"
-            v-slickPress="{
-              onClick: () => (item.clicked = true),
-              onLongPress: () => (item.selected = !item.selected),
-              wait: waitTime,
-              disableRightClickMenu: disableRightClick,
-            }"
-            @animationend="item.clicked = false"
-          >
-            click or press here
-          </button>
-        </div>
+        <section id="useSlickPress">
+          <h3>useSlickPress</h3>
+          <div class="section-demo">
+            <button ref="button" class="item">Click me uwu</button>
+            <div>
+              <p>
+                The <code>useSlickPress</code> composable can reference a single
+                element and determine long presses or clicks. Try the button, I
+                dare you.
+              </p>
+              <p v-show="lastAction">
+                You just <span class="bold">{{ lastAction }}</span> the button!
+                {{ times > 1 ? `${times} times, in fact.` : '' }}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section id="useSlickPressContainer">
+          <h3>useSlickPressContainer</h3>
+          <div class="section-demo">
+            <p>
+              The <code>useSlickPressContainer</code> composable works great for
+              cases where you have a container with many child nodes, and you
+              want to create an Android photo gallery selection/click
+              experience.
+            </p>
+            <p>Long press to begin selection mode.</p>
+            <div id="select">
+              <span
+                >Selected {{ selectionCount }} out of
+                {{ items.length }} items</span
+              >
+              <button
+                v-show="hasSelections"
+                type="button"
+                title="Unselect all"
+                @click="unselectAll"
+                class="button unselect"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 384 512"
+                  class="icon"
+                >
+                  <!--! Font Awesome Pro 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                  <path
+                    d="M376.6 84.5c11.3-13.6 9.5-33.8-4.1-45.1s-33.8-9.5-45.1 4.1L192 206 56.6 43.5C45.3 29.9 25.1 28.1 11.5 39.4S-3.9 70.9 7.4 84.5L150.3 256 7.4 427.5c-11.3 13.6-9.5 33.8 4.1 45.1s33.8 9.5 45.1-4.1L192 306 327.4 468.5c11.3 13.6 31.5 15.4 45.1 4.1s15.4-31.5 4.1-45.1L233.7 256 376.6 84.5z"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div id="grid" ref="grid">
+              <button
+                :data-item="$index"
+                data-slick
+                v-for="(item, $index) in items"
+                :aria-pressed="item.selected"
+                class="item"
+                type="button"
+                :class="{ clicked: item.clicked, selected: item.selected }"
+                @animationend="item.clicked = false"
+              >
+                click or press here
+              </button>
+            </div>
+          </div>
+        </section>
       </section>
     </main>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { vSlickPress } from './vue-slick-press';
+import { computed, ref } from 'vue';
+import { useSlickPress, useSlickPressContainer } from './vue-slick-press';
 
-const waitTime = ref<number>(300);
-const disableRightClick = ref<boolean>(false);
+const button = ref();
+const lastAction = ref('');
+const times = ref<number>(0);
+
+useSlickPress(button, {
+  onClick: () => {
+    if (['clicked', ''].includes(lastAction.value)) times.value++;
+    else {
+      times.value = 0;
+    }
+    lastAction.value = 'clicked';
+  },
+  onLongPress: () => {
+    if (['long pressed', ''].includes(lastAction.value)) times.value++;
+    else {
+      times.value = 0;
+    }
+    lastAction.value = 'long pressed';
+  },
+  wait: 800,
+  disableRightClickMenu: true,
+});
+
+const grid = ref();
 
 const items = ref(
   Array.from({ length: 20 }).map((e) => ({
@@ -93,7 +144,31 @@ const items = ref(
   })),
 );
 
-onMounted(() => {});
+const selectionCount = computed<number>(
+  () => items.value.filter((e) => e.selected).length,
+);
+
+const hasSelections = computed(() => selectionCount.value > 0);
+
+useSlickPressContainer(grid, {
+  onLongPress(e) {
+    const id = parseInt(e.target.dataset.item);
+    items.value[id].selected = !items.value[id].selected;
+  },
+  onClick(e) {
+    const id = parseInt(e.target.dataset.item);
+
+    if (hasSelections.value) {
+      items.value[id].selected = !items.value[id].selected;
+    } else {
+      items.value[id].clicked = !items.value[id].clicked;
+    }
+  },
+});
+
+function unselectAll() {
+  items.value = items.value.map((item) => ({ ...item, selected: false }));
+}
 </script>
 
 <style scoped>
@@ -108,7 +183,8 @@ select {
 }
 
 h1,
-h2 {
+h2,
+h3 {
   margin: 0.5rem 0;
 }
 h1 {
@@ -120,18 +196,30 @@ header {
 }
 
 section {
-  margin-top: 0.5rem;
+  margin-top: 1rem;
 }
 code,
 code::before {
   font-family: 'Ubuntu Mono', monospace;
 }
+p {
+  line-height: 1.5em;
+  margin: 0.5em 0;
+}
 
-code {
+.bold {
+  font-weight: bold;
+}
+main .icon {
+  width: 100%;
+  height: 100%;
+}
+
+.code-block {
   background: hsl(0, 0%, 90%);
   border: 1px solid hsl(0, 0%, 40%);
   border-radius: 0.25rem;
-  padding: 1rem;
+  padding: 0.5rem 1rem;
   width: 100%;
   box-sizing: border-box;
   display: block;
@@ -140,14 +228,14 @@ code {
   line-height: 1.3em;
 }
 
-code:hover {
+.code-block:hover {
   background: hsl(0, 0%, 90%) linear-gradient(to right, hsl(0, 0%, 90%), #fff)
     no-repeat;
   background-size: 25%;
   animation: shine 3s infinite linear;
 }
 
-code::before {
+.code-block::before {
   content: 'chaz@slick:~$';
   color: hsl(120, 100%, 40%);
   font-weight: 900;
@@ -200,26 +288,64 @@ code::before {
   transform: translateY(0%);
 }
 
-#demo {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
 #settings {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
+#useSlickPress .section-demo {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+#useSlickPress .section-demo .item {
+  height: 4rem;
+  display: inline-block;
+  text-wrap: nowrap;
+  overflow: visible;
+}
+
+#select {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: hsl(185, 28%, 40%);
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+  color: #fff;
+  min-height: 3rem;
+}
+
+#select .button {
+  border-radius: 50%;
+  border: none;
+  width: 1rem;
+  height: 1rem;
+  padding: 0.5rem;
+  box-sizing: content-box;
+  cursor: pointer;
+}
+
+#select .unselect {
+  background: red;
+  fill: #fff;
+}
 #grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, 6rem);
   gap: 1rem;
   justify-content: center;
+  margin-top: 1rem;
 }
 
-#grid .item {
+.item {
   background: #c08497;
   cursor: pointer;
   height: 6rem;
@@ -239,17 +365,23 @@ code::before {
   align-items: center;
 }
 
-#grid .item.selected {
+.item.selected {
   transform: scale(0.8);
   border: 5px solid #00e1ffa4;
 }
 
-#grid .item.clicked {
+.item.clicked {
   animation: nice-gradient 500ms linear forwards;
   background: #c08497 radial-gradient(#c08497 30%, #f7e3af80 60%, #c08497 70%)
     no-repeat;
   background-size: 1% 1%;
   background-position: center;
+}
+
+@media (min-width: 20rem) {
+  #useSlickPress .section-demo {
+    flex-direction: row;
+  }
 }
 
 @keyframes nice-gradient {
