@@ -152,16 +152,20 @@ const hasSelections = computed(() => selectionCount.value > 0);
 
 useSlickPressContainer(grid, {
   onLongPress(e) {
-    const id = parseInt(e.target.dataset.item);
-    items.value[id].selected = !items.value[id].selected;
+    if (e.target instanceof HTMLElement && 'item' in e.target.dataset) {
+      const id = parseInt(e.target.dataset.item as string);
+      items.value[id].selected = !items.value[id].selected;
+    }
   },
   onClick(e) {
-    const id = parseInt(e.target.dataset.item);
+    if (e.target instanceof HTMLElement && 'item' in e.target.dataset) {
+      const id = parseInt(e.target.dataset.item as string);
 
-    if (hasSelections.value) {
-      items.value[id].selected = !items.value[id].selected;
-    } else {
-      items.value[id].clicked = !items.value[id].clicked;
+      if (hasSelections.value) {
+        items.value[id].selected = !items.value[id].selected;
+      } else {
+        items.value[id].clicked = !items.value[id].clicked;
+      }
     }
   },
 });
