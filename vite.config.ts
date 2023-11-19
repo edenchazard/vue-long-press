@@ -34,7 +34,7 @@ export default defineConfig(({ mode }) => {
         outDir: './dist',
         emptyOutDir: true,
         lib: {
-          entry: resolve(__dirname, 'src/index.ts'),
+          entry: resolve(__dirname, 'src/vue-slick-press/index.ts'),
           name: 'VueSlickPress',
           formats: ['es', 'cjs'],
         },
