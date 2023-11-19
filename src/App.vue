@@ -29,49 +29,50 @@
 
     <main>
       <section>
-        <h2>Options</h2>
-        <form>
-          <div>
-            <input type="number" id="waitTime" v-model.number="waitTime" />
-            <label for="waitTime">
-              Wait time before a press is interpreted as a "long press".
-            </label>
-          </div>
+        <code>npm install @edenchazard/vue-slick-press</code>
+      </section>
+
+      <section id="demo">
+        <div id="settings">
+          <h2>Demo</h2>
+          <select v-model.number="waitTime" id="waitTime">
+            <option value="300">300ms</option>
+            <option value="600">600ms</option>
+            <option value="1000">1s</option>
+            <option value="2000">2s</option>
+          </select>
+          <label for="waitTime">
+            Wait time before a press is interpreted as a "long press".
+          </label>
           <div>
             <input
               type="checkbox"
               id="disableRightClick"
               v-model="disableRightClick"
             />
-            <label for="waitTime">
+            <label for="disableRightClick">
               Disable the right click menu. If enabled, some css will be applied
               to the element disabling the right click menu.
             </label>
           </div>
-        </form>
-      </section>
-      <section>
-        <h2>Preview</h2>
+        </div>
+
         <div id="grid">
-          <div
-            class="item-wrapper"
+          <button
             v-for="item in items"
-            :class="{ selected: item.selected }"
+            :aria-pressed="item.selected"
+            class="item"
+            :class="{ clicked: item.clicked, selected: item.selected }"
+            v-slickPress="{
+              onClick: () => (item.clicked = true),
+              onLongPress: () => (item.selected = !item.selected),
+              wait: waitTime,
+              disableRightClickMenu: disableRightClick,
+            }"
+            @animationend="item.clicked = false"
           >
-            <div
-              class="item"
-              :class="{ clicked: item.clicked }"
-              v-slickPress="{
-                onClick: () => (item.clicked = true),
-                onLongPress: () => (item.selected = !item.selected),
-                wait: waitTime,
-                disableRightClickMenu: disableRightClick,
-              }"
-              @animationend="item.clicked = false"
-            >
-              click or press here
-            </div>
-          </div>
+            click or press here
+          </button>
         </div>
       </section>
     </main>
@@ -96,17 +97,69 @@ onMounted(() => {});
 </script>
 
 <style scoped>
+*:focus-visible {
+  outline: 5px solid rgba(100, 148, 237, 0.521);
+}
+input,
+select {
+  padding: 0.5rem;
+  box-shadow: inset 0px 0px 10px 0px #00000017;
+  border-radius: 0.25rem;
+}
+
+h1,
+h2 {
+  margin: 0.5rem 0;
+}
+h1 {
+  line-height: 1.4rem;
+}
+
+header {
+  padding: 0.5rem 0 0 0;
+}
+
+section {
+  margin-top: 0.5rem;
+}
+code,
+code::before {
+  font-family: 'Ubuntu Mono', monospace;
+}
+
+code {
+  background: hsl(0, 0%, 90%);
+  border: 1px solid hsl(0, 0%, 40%);
+  border-radius: 0.25rem;
+  padding: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  display: block;
+  cursor: pointer;
+  word-break: break-all;
+  line-height: 1.3em;
+}
+
+code:hover {
+  background: hsl(0, 0%, 90%) linear-gradient(to right, hsl(0, 0%, 90%), #fff)
+    no-repeat;
+  background-size: 25%;
+  animation: shine 3s infinite linear;
+}
+
+code::before {
+  content: 'chaz@slick:~$';
+  color: hsl(120, 100%, 40%);
+  font-weight: 900;
+  margin-right: 1rem;
+  user-select: none;
+}
+
 #container {
   max-width: 30rem;
   margin: 0 auto;
 }
 
-h1 {
-  line-height: 1rem;
-}
-header {
-  padding: 0.5rem 0 0 0;
-}
 #menu {
   min-height: 4.2rem;
   box-shadow: 0 4px 2px -2px #000;
@@ -146,13 +199,27 @@ header {
 #github:hover .label {
   transform: translateY(0%);
 }
+
+#demo {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#settings {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 #grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, 6rem);
   gap: 1rem;
+  justify-content: center;
 }
 
-#grid .item-wrapper {
+#grid .item {
   background: #c08497;
   cursor: pointer;
   height: 6rem;
@@ -163,29 +230,24 @@ header {
   border-radius: 1rem;
   position: relative;
   box-sizing: border-box;
-  transition: border 500ms;
-}
-
-#grid .item-wrapper.selected {
-  border: 5px solid #00e1ffa4;
-}
-#grid .item-wrapper.selected .item {
-  transform: scale(0.8);
-}
-
-#grid .item {
+  border: 0px solid transparent;
+  transition:
+    border 200ms linear,
+    transform 200ms linear;
   padding: 0.5rem;
   flex: 1;
-  display: flex;
   align-items: center;
-  border: 0px none;
-  transition:
-    border 0.5s linear,
-    transform 0.2s linear;
 }
+
+#grid .item.selected {
+  transform: scale(0.8);
+  border: 5px solid #00e1ffa4;
+}
+
 #grid .item.clicked {
   animation: nice-gradient 500ms linear forwards;
-  background: radial-gradient(#c08497 30%, #f7e3af80 60%, #c08497 70%) no-repeat;
+  background: #c08497 radial-gradient(#c08497 30%, #f7e3af80 60%, #c08497 70%)
+    no-repeat;
   background-size: 1% 1%;
   background-position: center;
 }
@@ -194,7 +256,7 @@ header {
   0% {
     background-size: 10% 10%;
   }
-  40% {
+  50% {
     background-size: 100% 100%;
   }
   100% {
@@ -213,9 +275,23 @@ header {
     transform: rotate(0deg);
   }
 }
+
+@keyframes shine {
+  0% {
+    background-position: -100%;
+  }
+  50% {
+    background-position: 100%;
+  }
+  100% {
+    background-position: 200%;
+  }
+}
 </style>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap');
+
 body {
   min-height: 100%;
   background: #b0d0d3;
