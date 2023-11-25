@@ -2,6 +2,7 @@
   "name": "@edenchazard/vue-slick-press",
   "version": "2.1.0",
   "private": false,
+  "type": "module",
   "homepage": "https://github.com/edenchazard/vue-slick-press#readme",
   "files": [
     "dist"

@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => {
       dts(
         mode === 'package'
           ? {
-              entryRoot: './src/vue-slick-press',
+              entryRoot: './src/vue-slick-press/',
               tsconfigPath: './tsconfig.app.json',
             }
           : {},
